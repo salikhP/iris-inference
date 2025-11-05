@@ -1,0 +1,19 @@
+[project]
+name = "iris-inference"
+
+[tool.poetry]
+package-mode=false
+
+[tool.poetry.dependencies]
+python="^3.12"
+mlflow = "^3.5.1"
+scikit-learn = "^1.7.2"
+pandas = "^2.3.3"
+numpy = "^2.3.4"
+fastapi = "^0.121.0"
+uvicorn = "^0.38.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.9.0"
+isort = "^7.0.0"
+mypy = "^1.18.2"
