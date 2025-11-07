@@ -18,6 +18,14 @@ mv = client.create_model_version(
     run_id=run_id,
 )
 
+client.set_registered_model_alias(
+    name="iris_cls",
+    alias="production",
+    version=mv.version,
+)
+
+print (f"Registered iris_cls v{mv.version} and set alias @production")
+
 client.transition_model_version_stage(
     name=model_name,
     version=mv.version,
