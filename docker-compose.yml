@@ -1,0 +1,53 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: mlflow
+      POSTGRES_PASSWORD: mlflow
+      POSTGRES_DB: mlflow
+    volumes:
+      - mlflow_pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    volumes:
+      - iris_minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    depends_on:
+      - postgres
+      - minio
+    environment:
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: minio
+      AWS_SECRET_ACCESS_KEY: minio123
+      AWS_DEFAULT_REGION: us-east-1
+    ports:
+      - "5000:5000"
+    command: >
+      mlflow server
+      --backend-store-uri postgresql://mlflow:mlflow@postgres:5432/mlflow
+      --artifacts-destination s3://mlflow-artifacts
+      --host 0.0.0.0
+      --port 5000
+  iris-api:
+    build: ./api
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MODEL_URI: models:/iris_cls@production
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mlflow
+volumes:
+  mlflow_pg_data:
+  iris_minio_data:
