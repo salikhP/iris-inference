@@ -11,6 +11,7 @@ def main() -> None:
     X, y = load_iris(return_X_y=True, as_frame=True)
     Xtr, Xte, ytr, yte = train_test_split(X, y, test_size=0.2, random_state=42)
 
+    mlflow.set_tracking_uri("http://mlflow:5000")
     mlflow.set_experiment("iris_classification")
 
     with mlflow.start_run():

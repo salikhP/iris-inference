@@ -2,11 +2,11 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import os, pandas as pd, mlflow
 
-app = FastAPI(title="Iris Inference API")
-
-RUN_ID = os.getenv("RUN_ID")
-MODEL_URI = f"runs:/{RUN_ID}/model"
+mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "http://mlflow:5000"))
+MODEL_URI = os.getenv("MODEL_URI", "models:/iris_cls@production")
 model = mlflow.sklearn.load_model(MODEL_URI)
+
+app = FastAPI(title="Iris Inference API")
 
 class IrisRequest(BaseModel):
     sepal_length: float
